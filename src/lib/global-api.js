@@ -22,10 +22,12 @@ export const BaseURL = URL_OPTIONS.API + commonExtendedApi;
 
 // Enhanced token management
 const getToken = async (customToken) => {
-  if (customToken) return customToken;
   const token = await AsyncStorage.getItem(TOKEN_KEY);
-  if (token) return token;
-  return await AsyncStorage.getItem(ADMIN_TOKEN_KEY);
+  console.log(token, "hello-token");
+  return token;
+};
+const getRefreshToken = async () => {
+  return await AsyncStorage.getItem("hrms_refresh_token");
 };
 
 // Get device info (basic alternative for React Native Expo)
@@ -47,12 +49,17 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     const token = await getToken(config.customToken);
+    const refreshToken = await getRefreshToken();
     const deviceInfo = getDeviceInfo();
 
     config.headers["Device-Info"] = JSON.stringify(deviceInfo);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (refreshToken) {
+      // Send refresh token as a header
+      config.headers["Refresh_token"] = refreshToken;
     }
 
     return config;

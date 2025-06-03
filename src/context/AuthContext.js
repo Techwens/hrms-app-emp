@@ -61,8 +61,8 @@ export function AuthContextProvider({ children }) {
 
     const payload = {
       // phone: "8910985759",
-      phone: "9432499608",
-      password: "12345678",
+      phone: "8899889981",
+      password: "Links@1234",
       deviceInfo: deviceInfo,
       deviceId: deviceId,
     };
@@ -82,6 +82,11 @@ export function AuthContextProvider({ children }) {
       setLoginLoading(false);
       if (response?.data?.employee_id) {
         setIsAuthenticated(true);
+        await AsyncStorage.setItem("hrms_token", response?.data?.accessToken);
+        await AsyncStorage.setItem(
+          "hrms_refresh_token",
+          response?.data?.refresh_token
+        );
       }
     } catch (error) {
       console.log(error, "login-error");
@@ -91,6 +96,7 @@ export function AuthContextProvider({ children }) {
     }
   };
   const logout = async () => {
+    await AsyncStorage.removeItem("hrms_token");
     setIsAuthenticated(false);
     setFormData({ phone: "", password: "" });
   };
