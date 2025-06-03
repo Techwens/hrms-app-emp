@@ -25,6 +25,8 @@ export function AuthContextProvider({ children }) {
   const [userData, setUserData] = useState({});
 
   const [loginLoading, setLoginLoading] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [testTitle, setTestTitle] = useState("hello-saha");
   const { fetchData } = useAPIHandler();
 
   const handleInputChange = (value, field) => {
@@ -79,7 +81,7 @@ export function AuthContextProvider({ children }) {
       });
       console.log(response, "login-response");
       setUserData(response?.data);
-      setLoginLoading(false);
+      setLogoutLoading(false);
       if (response?.data?.employee_id) {
         setIsAuthenticated(true);
         await AsyncStorage.setItem("hrms_token", response?.data?.accessToken);
@@ -92,15 +94,29 @@ export function AuthContextProvider({ children }) {
       console.log(error, "login-error");
       throw error;
     } finally {
-      setLoginLoading(false);
+      setLogoutLoading(false);
     }
   };
-  const logout = async () => {
-    await AsyncStorage.removeItem("hrms_token");
-    setIsAuthenticated(false);
-    setFormData({ phone: "", password: "" });
+  const handleLogoutClick = async () => {
+    console.log("click logout");
+    try {
+      setLogoutLoading(true);
+      const response = await fetchData({
+        url: "/auth/logout",
+        method: "POST",
+      });
+      console.log(response, "logout-response");
+      await AsyncStorage.removeItem("hrms_token");
+      setIsAuthenticated(false);
+      setFormData({ phone: "", password: "" });
+      setLogoutLoading(false);
+    } catch (error) {
+      console.log(error, "logout-error");
+      throw error;
+    } finally {
+      setLogoutLoading(false);
+    }
   };
-
   const value = {
     loginLoading,
     handleLoginSubmit,
@@ -110,8 +126,9 @@ export function AuthContextProvider({ children }) {
     handleInputChange,
     formData,
     isAuthenticated,
-    logout,
+    handleLogoutClick,
     userData,
+    testTitle,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

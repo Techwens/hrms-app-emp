@@ -6,7 +6,7 @@ import useMyProfileService from "./use-profile-data.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DashboardScreen() {
-  const { logout } = useAuthContext();
+  const { handleLogoutClick, testTitle } = useAuthContext();
   const checkData = async () => {
     try {
       console.log("checkData called");
@@ -25,7 +25,14 @@ export default function DashboardScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to the Dashboard!</Text>
-      <Button title="Logout" onPress={logout} />
+      <Text style={styles.title}>{testTitle}</Text>
+      <Button
+        title="Logout111"
+        onPress={() => {
+          console.log("Button pressed");
+          handleLogoutClick();
+        }}
+      />
     </View>
   );
 }
